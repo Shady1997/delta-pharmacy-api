@@ -26,19 +26,19 @@ public class SwaggerConfig {
     public OpenAPI pharmacyOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Pharmacy Management API")
+                        .title("Delta Pharmacy Management API by Shady Ahmed")
                         .description("Complete RESTful API for Pharmacy Operations including authentication, product management, prescription handling, orders, payments, and analytics")
                         .version("v1.0.0")
                         .contact(new Contact()
                                 .name("Pharmacy API Support")
-                                .email("support@pharmacy.com")
+                                .email("shadyahmed9719@gmail.com")
                                 .url("https://pharmacy.com"))
                         .license(new License()
                                 .name("MIT License")
                                 .url("https://opensource.org/licenses/MIT")))
                 .servers(List.of(
                         new Server()
-                                .url("http://localhost:8080/pharmacy-api")
+                                .url("http://localhost:8545/pharmacy-api")
                                 .description("Development Server"),
                         new Server()
                                 .url("https://api.pharmacy.com")
