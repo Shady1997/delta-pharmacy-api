@@ -1,6 +1,8 @@
-# 🏥 Pharmacy Management System - RESTful API
+# 🏥 Delta Pharmacy Management System - RESTful API
 
-A comprehensive Spring Boot RESTful API for managing pharmacy operations including user authentication, product management, prescription handling, order processing, payments, and analytics.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+A comprehensive Spring Boot RESTful API for managing delta pharmacy operations including user authentication, product management, prescription handling, order processing, payments, and analytics.
 
 ## 📋 Features
 
@@ -769,7 +771,7 @@ After setting up, verify you have:
 **Total: 73 files (including pom.xml, properties, README)**
 
 ---
-
+## Delta Pharmacy API - Complete Workflow Diagram 
 ```mermaid
    graph TD
     Start([🏁 Start]) --> UserReg[👤 User Registration]
@@ -898,6 +900,577 @@ After setting up, verify you have:
     style CustomerFlow fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
     style PharmacistFlow fill:#F3E5F5,stroke:#9C27B0,stroke-width:2px
     style AdminFlow fill:#FFF3E0,stroke:#FF9800,stroke-width:2px
+```
+
+## Delta Pharmacy API - Sequence Diagram
+```mermaid
+sequenceDiagram
+    participant C as 👤 Customer
+    participant UI as 🖥️ Frontend
+    participant API as 🔌 API Gateway
+    participant Auth as 🔐 Auth Service
+    participant Prod as 🏥 Product Service
+    participant Presc as 📋 Prescription Service
+    participant Order as 📦 Order Service
+    participant Pay as 💳 Payment Service
+    participant Notif as 📧 Notification Service
+    participant DB as 💾 Database
+    
+    Note over C,DB: 1️⃣ USER REGISTRATION & LOGIN
+    C->>UI: Register Account
+    UI->>API: POST /api/auth/register
+    API->>Auth: Register User
+    Auth->>DB: Save User
+    DB-->>Auth: User Saved
+    Auth-->>API: JWT Token
+    API-->>UI: Auth Response
+    UI-->>C: Welcome! You're Registered
+    
+    C->>UI: Login
+    UI->>API: POST /api/auth/login
+    API->>Auth: Validate Credentials
+    Auth->>DB: Query User
+    DB-->>Auth: User Details
+    Auth-->>API: JWT Token
+    API-->>UI: Token & User Info
+    UI-->>C: Login Success
+    
+    Note over C,DB: 2️⃣ BROWSE & SEARCH PRODUCTS
+    C->>UI: Browse Medicines
+    UI->>API: GET /api/products
+    API->>Prod: Get All Products
+    Prod->>DB: Query Products
+    DB-->>Prod: Product List
+    Prod-->>API: Products with Stock
+    API-->>UI: Products JSON
+    UI-->>C: Display Products
+    
+    C->>UI: Search "Paracetamol"
+    UI->>API: GET /api/search?query=paracetamol
+    API->>Prod: Search Products
+    Prod->>DB: Search Query
+    DB-->>Prod: Matching Products
+    Prod-->>API: Search Results
+    API-->>UI: Filtered Products
+    UI-->>C: Show Search Results
+    
+    Note over C,DB: 3️⃣ PRESCRIPTION UPLOAD & APPROVAL
+    C->>UI: Select Rx Medicine
+    UI-->>C: Prescription Required!
+    C->>UI: Upload Prescription
+    UI->>API: POST /api/prescriptions/upload
+    API->>Presc: Save Prescription
+    Presc->>DB: Store Prescription
+    DB-->>Presc: Saved
+    Presc->>Notif: Create Notification
+    Notif->>DB: Save Notification
+    Notif-->>Presc: Notification Sent
+    Presc-->>API: Prescription Pending
+    API-->>UI: Upload Success
+    UI-->>C: Prescription Under Review
+    
+    Note over C,DB: 4️⃣ PHARMACIST REVIEWS PRESCRIPTION
+    participant P as 💊 Pharmacist
+    P->>UI: Login as Pharmacist
+    P->>UI: View Pending Prescriptions
+    UI->>API: GET /api/prescriptions/pending
+    API->>Presc: Get Pending
+    Presc->>DB: Query Pending
+    DB-->>Presc: Pending List
+    Presc-->>API: Prescriptions
+    API-->>UI: Show List
+    UI-->>P: Display Prescriptions
+    
+    P->>UI: Approve Prescription
+    UI->>API: PUT /api/prescriptions/{id}/approve
+    API->>Presc: Approve Prescription
+    Presc->>DB: Update Status
+    DB-->>Presc: Updated
+    Presc->>Notif: Notify Customer
+    Notif->>DB: Save Notification
+    Notif-->>C: 📧 Prescription Approved!
+    Presc-->>API: Approved
+    API-->>UI: Success
+    UI-->>P: Prescription Approved
+    
+    Note over C,DB: 5️⃣ CREATE ORDER
+    C->>UI: Add to Cart
+    C->>UI: Proceed to Checkout
+    UI->>API: POST /api/orders
+    API->>Order: Create Order
+    Order->>DB: Check Stock
+    DB-->>Order: Stock Available
+    Order->>DB: Reduce Stock
+    Order->>DB: Save Order
+    DB-->>Order: Order Created
+    Order->>Notif: Order Notification
+    Notif-->>C: 📧 Order Created
+    Order-->>API: Order Details
+    API-->>UI: Order ID #123
+    UI-->>C: Order Created Successfully
+    
+    Note over C,DB: 6️⃣ PAYMENT PROCESSING
+    C->>UI: Make Payment
+    UI->>API: POST /api/payments/initiate
+    API->>Pay: Initiate Payment
+    Pay->>DB: Create Payment Record
+    DB-->>Pay: Payment Pending
+    Pay-->>API: Transaction ID
+    API-->>UI: Payment Initiated
+    UI-->>C: Redirect to Payment
+    
+    C->>UI: Complete Payment
+    UI->>API: POST /api/payments/verify
+    API->>Pay: Verify Payment
+    Pay->>Pay: Mock Gateway Check
+    Pay->>DB: Update Payment Status
+    DB-->>Pay: Payment Completed
+    Pay->>Order: Update Order Status
+    Order->>DB: Order Confirmed
+    Pay->>Notif: Payment Success
+    Notif-->>C: 📧 Payment Successful
+    Pay-->>API: Payment Verified
+    API-->>UI: Payment Success
+    UI-->>C: ✅ Order Confirmed!
+    
+    Note over C,DB: 7️⃣ ORDER TRACKING & DELIVERY
+    C->>UI: Track Order
+    UI->>API: GET /api/orders/{userId}
+    API->>Order: Get User Orders
+    Order->>DB: Query Orders
+    DB-->>Order: Order List
+    Order-->>API: Orders with Status
+    API-->>UI: Order History
+    UI-->>C: Show Order Status
+    
+    participant A as ⚙️ Admin
+    A->>UI: Login as Admin
+    A->>UI: Update Order Status
+    UI->>API: PUT /api/orders/{id}/status
+    API->>Order: Update Status
+    Order->>DB: Update Order
+    DB-->>Order: Updated
+    Order->>Notif: Status Change
+    Notif-->>C: 📧 Order Shipped!
+    Order-->>API: Status Updated
+    API-->>UI: Success
+    UI-->>A: Order Updated
+    
+    Note over C,DB: 8️⃣ LEAVE REVIEW & SUPPORT
+    C->>UI: Leave Review
+    UI->>API: POST /api/reviews
+    API->>Prod: Save Review
+    Prod->>DB: Store Review
+    DB-->>Prod: Saved
+    Prod-->>API: Review Added
+    API-->>UI: Success
+    UI-->>C: Thank You!
+    
+    C->>UI: Need Help?
+    UI->>API: POST /api/support/ticket
+    API->>Notif: Create Ticket
+    Notif->>DB: Save Ticket
+    DB-->>Notif: Ticket Created
+    Notif-->>API: Ticket #456
+    API-->>UI: Ticket Created
+    UI-->>C: We'll Contact You Soon
+    
+    Note over C,DB: 9️⃣ ANALYTICS & REPORTS (ADMIN)
+    A->>UI: View Dashboard
+    UI->>API: GET /api/reports/sales
+    API->>Order: Generate Sales Report
+    Order->>DB: Aggregate Sales Data
+    DB-->>Order: Sales Stats
+    Order-->>API: Sales Report
+    
+    UI->>API: GET /api/reports/inventory
+    API->>Prod: Generate Inventory Report
+    Prod->>DB: Query Stock Levels
+    DB-->>Prod: Inventory Stats
+    Prod-->>API: Inventory Report
+    
+    UI->>API: GET /api/reports/users
+    API->>Auth: Generate Users Report
+    Auth->>DB: Query Users
+    DB-->>Auth: User Stats
+    Auth-->>API: Users Report
+    
+    API-->>UI: All Reports
+    UI-->>A: Display Analytics Dashboard
+```
+
+## Delta Pharmacy API - Module Interaction Diagram
+```mermaid
+graph TB
+    subgraph Frontend["🖥️ FRONTEND APPLICATION"]
+        WebApp[Web Application]
+        MobileApp[Mobile App]
+    end
+    
+    subgraph APIGateway["🔌 API GATEWAY"]
+        RestAPI[REST API Endpoints]
+        Swagger[Swagger Documentation]
+    end
+    
+    subgraph Security["🔐 SECURITY LAYER"]
+        JWT[JWT Token Provider]
+        AuthFilter[Authentication Filter]
+        UserDetails[User Details Service]
+    end
+    
+    subgraph Controllers["🎮 CONTROLLERS LAYER"]
+        AuthCtrl[Auth Controller]
+        ProdCtrl[Product Controller]
+        PrescCtrl[Prescription Controller]
+        OrderCtrl[Order Controller]
+        PayCtrl[Payment Controller]
+        NotifCtrl[Notification Controller]
+        ReviewCtrl[Review Controller]
+        SupportCtrl[Support Controller]
+        AnalyticsCtrl[Analytics Controller]
+    end
+    
+    subgraph Services["⚙️ BUSINESS LOGIC LAYER"]
+        AuthSvc[Auth Service]
+        ProdSvc[Product Service]
+        PrescSvc[Prescription Service]
+        OrderSvc[Order Service]
+        PaySvc[Payment Service]
+        NotifSvc[Notification Service]
+        ReviewSvc[Review Service]
+        SupportSvc[Support Service]
+        AnalyticsSvc[Analytics Service]
+    end
+    
+    subgraph Repositories["💾 DATA ACCESS LAYER"]
+        UserRepo[(User Repository)]
+        ProdRepo[(Product Repository)]
+        PrescRepo[(Prescription Repository)]
+        OrderRepo[(Order Repository)]
+        PayRepo[(Payment Repository)]
+        NotifRepo[(Notification Repository)]
+        ReviewRepo[(Review Repository)]
+        TicketRepo[(Support Ticket Repository)]
+    end
+    
+    subgraph Database["🗄️ DATABASE"]
+        H2DB[(H2 In-Memory Database)]
+    end
+    
+    subgraph ExternalMock["🔌 MOCK INTEGRATIONS"]
+        PaymentGW[Payment Gateway Mock]
+        EmailSvc[Email Service Mock]
+        SMSSvc[SMS Service Mock]
+        PushNotif[Push Notification Mock]
+        FileStorage[File Storage Mock]
+    end
+    
+    %% Frontend to API
+    WebApp --> RestAPI
+    MobileApp --> RestAPI
+    
+    %% API to Security
+    RestAPI --> AuthFilter
+    AuthFilter --> JWT
+    AuthFilter --> UserDetails
+    
+    %% Security to Controllers
+    JWT --> AuthCtrl
+    AuthFilter --> ProdCtrl
+    AuthFilter --> PrescCtrl
+    AuthFilter --> OrderCtrl
+    AuthFilter --> PayCtrl
+    AuthFilter --> NotifCtrl
+    AuthFilter --> ReviewCtrl
+    AuthFilter --> SupportCtrl
+    AuthFilter --> AnalyticsCtrl
+    
+    %% Controllers to Services
+    AuthCtrl --> AuthSvc
+    ProdCtrl --> ProdSvc
+    PrescCtrl --> PrescSvc
+    OrderCtrl --> OrderSvc
+    PayCtrl --> PaySvc
+    NotifCtrl --> NotifSvc
+    ReviewCtrl --> ReviewSvc
+    SupportCtrl --> SupportSvc
+    AnalyticsCtrl --> AnalyticsSvc
+    
+    %% Services to Services (Cross-Module Communication)
+    PrescSvc -.->|Notify User| NotifSvc
+    OrderSvc -.->|Check Stock| ProdSvc
+    OrderSvc -.->|Validate Prescription| PrescSvc
+    OrderSvc -.->|Notify User| NotifSvc
+    PaySvc -.->|Update Order| OrderSvc
+    PaySvc -.->|Notify User| NotifSvc
+    AuthSvc -.->|Get User| UserRepo
+    
+    %% Services to Repositories
+    AuthSvc --> UserRepo
+    ProdSvc --> ProdRepo
+    PrescSvc --> PrescRepo
+    PrescSvc --> UserRepo
+    OrderSvc --> OrderRepo
+    OrderSvc --> ProdRepo
+    PaySvc --> PayRepo
+    PaySvc --> OrderRepo
+    NotifSvc --> NotifRepo
+    ReviewSvc --> ReviewRepo
+    ReviewSvc --> ProdRepo
+    SupportSvc --> TicketRepo
+    AnalyticsSvc --> OrderRepo
+    AnalyticsSvc --> ProdRepo
+    AnalyticsSvc --> UserRepo
+    
+    %% Repositories to Database
+    UserRepo --> H2DB
+    ProdRepo --> H2DB
+    PrescRepo --> H2DB
+    OrderRepo --> H2DB
+    PayRepo --> H2DB
+    NotifRepo --> H2DB
+    ReviewRepo --> H2DB
+    TicketRepo --> H2DB
+    
+    %% Services to Mock External Services
+    PaySvc -.->|Process Payment| PaymentGW
+    NotifSvc -.->|Send Email| EmailSvc
+    NotifSvc -.->|Send SMS| SMSSvc
+    NotifSvc -.->|Push Notification| PushNotif
+    PrescSvc -.->|Store File| FileStorage
+    
+    %% Swagger
+    RestAPI --> Swagger
+    
+    %% Styling
+    classDef frontend fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
+    classDef security fill:#FFF3E0,stroke:#FF9800,stroke-width:2px
+    classDef controller fill:#F3E5F5,stroke:#9C27B0,stroke-width:2px
+    classDef service fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px
+    classDef repository fill:#FCE4EC,stroke:#E91E63,stroke-width:2px
+    classDef database fill:#FFEBEE,stroke:#F44336,stroke-width:3px
+    classDef mock fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px
+    
+    class WebApp,MobileApp frontend
+    class JWT,AuthFilter,UserDetails security
+    class AuthCtrl,ProdCtrl,PrescCtrl,OrderCtrl,PayCtrl,NotifCtrl,ReviewCtrl,SupportCtrl,AnalyticsCtrl controller
+    class AuthSvc,ProdSvc,PrescSvc,OrderSvc,PaySvc,NotifSvc,ReviewSvc,SupportSvc,AnalyticsSvc service
+    class UserRepo,ProdRepo,PrescRepo,OrderRepo,PayRepo,NotifRepo,ReviewRepo,TicketRepo repository
+    class H2DB database
+    class PaymentGW,EmailSvc,SMSSvc,PushNotif,FileStorage mock
+```
+
+## Delta Pharmacy API - Complete Use Cases
+```mermaid
+graph LR
+    subgraph Actors["👥 ACTORS"]
+        Customer([👤 Customer])
+        Pharmacist([💊 Pharmacist])
+        Admin([⚙️ Admin])
+        Guest([👁️ Guest])
+    end
+    
+    subgraph Authentication["🔐 AUTHENTICATION & PROFILE"]
+        UC1[Register Account]
+        UC2[Login]
+        UC3[Logout]
+        UC4[View Profile]
+        UC5[Update Profile]
+        UC6[Change Password]
+    end
+    
+    subgraph ProductManagement["🏥 PRODUCT MANAGEMENT"]
+        UC7[Browse Products]
+        UC8[Search Products]
+        UC9[View Product Details]
+        UC10[Filter by Category]
+        UC11[Add Product]
+        UC12[Update Product]
+        UC13[Delete Product]
+        UC14[View Reviews]
+    end
+    
+    subgraph InventoryManagement["📦 INVENTORY MANAGEMENT"]
+        UC15[View Stock Levels]
+        UC16[Update Stock]
+        UC17[Low Stock Alerts]
+        UC18[Inventory Report]
+    end
+    
+    subgraph PrescriptionManagement["📋 PRESCRIPTION MANAGEMENT"]
+        UC19[Upload Prescription]
+        UC20[View My Prescriptions]
+        UC21[View Pending Prescriptions]
+        UC22[Approve Prescription]
+        UC23[Reject Prescription]
+        UC24[Check Prescription Status]
+    end
+    
+    subgraph OrderManagement["🛒 ORDER MANAGEMENT"]
+        UC25[Add to Cart]
+        UC26[Create Order]
+        UC27[View My Orders]
+        UC28[Track Order]
+        UC29[Cancel Order]
+        UC30[View All Orders]
+        UC31[Update Order Status]
+    end
+    
+    subgraph PaymentManagement["💳 PAYMENT MANAGEMENT"]
+        UC32[Initiate Payment]
+        UC33[Complete Payment]
+        UC34[Verify Payment]
+        UC35[View Payment History]
+        UC36[Payment Failed Retry]
+    end
+    
+    subgraph NotificationSystem["📧 NOTIFICATION SYSTEM"]
+        UC37[View Notifications]
+        UC38[Mark as Read]
+        UC39[Order Notifications]
+        UC40[Prescription Notifications]
+        UC41[Payment Notifications]
+    end
+    
+    subgraph ReviewSystem["⭐ REVIEW & RATING"]
+        UC42[Leave Review]
+        UC43[Rate Product]
+        UC44[View Product Reviews]
+        UC45[Calculate Average Rating]
+    end
+    
+    subgraph SupportSystem["💬 CUSTOMER SUPPORT"]
+        UC46[Create Support Ticket]
+        UC47[View My Tickets]
+        UC48[Chat with Pharmacist]
+        UC49[View All Tickets]
+        UC50[Respond to Ticket]
+        UC51[Close Ticket]
+    end
+    
+    subgraph AnalyticsReporting["📊 ANALYTICS & REPORTING"]
+        UC52[Sales Report]
+        UC53[Revenue Analysis]
+        UC54[Inventory Report]
+        UC55[Users Report]
+        UC56[Order Statistics]
+        UC57[Product Performance]
+    end
+    
+    subgraph UserManagement["👥 USER MANAGEMENT"]
+        UC58[View All Users]
+        UC59[Assign Roles]
+        UC60[Deactivate User]
+        UC61[User Activity Log]
+    end
+    
+    %% Guest Interactions
+    Guest --> UC7
+    Guest --> UC8
+    Guest --> UC9
+    Guest --> UC10
+    Guest --> UC14
+    Guest --> UC44
+    Guest --> UC1
+    Guest --> UC2
+    
+    %% Customer Interactions
+    Customer --> UC2
+    Customer --> UC3
+    Customer --> UC4
+    Customer --> UC5
+    Customer --> UC6
+    Customer --> UC7
+    Customer --> UC8
+    Customer --> UC9
+    Customer --> UC10
+    Customer --> UC14
+    Customer --> UC19
+    Customer --> UC20
+    Customer --> UC24
+    Customer --> UC25
+    Customer --> UC26
+    Customer --> UC27
+    Customer --> UC28
+    Customer --> UC29
+    Customer --> UC32
+    Customer --> UC33
+    Customer --> UC35
+    Customer --> UC36
+    Customer --> UC37
+    Customer --> UC38
+    Customer --> UC42
+    Customer --> UC43
+    Customer --> UC46
+    Customer --> UC47
+    Customer --> UC48
+    
+    %% Pharmacist Interactions
+    Pharmacist --> UC2
+    Pharmacist --> UC3
+    Pharmacist --> UC4
+    Pharmacist --> UC5
+    Pharmacist --> UC7
+    Pharmacist --> UC8
+    Pharmacist --> UC9
+    Pharmacist --> UC15
+    Pharmacist --> UC21
+    Pharmacist --> UC22
+    Pharmacist --> UC23
+    Pharmacist --> UC30
+    Pharmacist --> UC31
+    Pharmacist --> UC49
+    Pharmacist --> UC50
+    Pharmacist --> UC51
+    Pharmacist --> UC52
+    Pharmacist --> UC53
+    Pharmacist --> UC54
+    
+    %% Admin Interactions
+    Admin --> UC2
+    Admin --> UC3
+    Admin --> UC4
+    Admin --> UC5
+    Admin --> UC7
+    Admin --> UC8
+    Admin --> UC9
+    Admin --> UC10
+    Admin --> UC11
+    Admin --> UC12
+    Admin --> UC13
+    Admin --> UC14
+    Admin --> UC15
+    Admin --> UC16
+    Admin --> UC17
+    Admin --> UC18
+    Admin --> UC21
+    Admin --> UC22
+    Admin --> UC23
+    Admin --> UC30
+    Admin --> UC31
+    Admin --> UC49
+    Admin --> UC50
+    Admin --> UC51
+    Admin --> UC52
+    Admin --> UC53
+    Admin --> UC54
+    Admin --> UC55
+    Admin --> UC56
+    Admin --> UC57
+    Admin --> UC58
+    Admin --> UC59
+    Admin --> UC60
+    Admin --> UC61
+    
+    %% Styling
+    classDef actor fill:#FFE082,stroke:#F57C00,stroke-width:3px
+    classDef usecase fill:#B3E5FC,stroke:#0277BD,stroke-width:2px
+    classDef critical fill:#FFCDD2,stroke:#C62828,stroke-width:2px
+    classDef admin fill:#D1C4E9,stroke:#512DA8,stroke-width:2px
+    
+    class Customer,Pharmacist,Admin,Guest actor
+    class UC1,UC2,UC26,UC32,UC22,UC31 critical
+    class UC11,UC12,UC13,UC16,UC59,UC60 admin
 ```
 ## 🆘 Need Help?
 https://www.linkedin.com/in/shady-ahmed97/
