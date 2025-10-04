@@ -35,7 +35,7 @@ A comprehensive Spring Boot RESTful API for managing delta pharmacy operations i
 
 1. Clone the repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/Shady1997/delta-pharmacy-api.git
 cd pharmacy-api
 ```
 
@@ -49,7 +49,7 @@ mvn clean install
 mvn spring-boot:run
 ```
 
-The application will start on `http://localhost:8080/pharmacy-api`
+The application will start on `http://localhost:8545/pharmacy-api`
 
 ### Default Users
 
@@ -65,7 +65,7 @@ The application comes with pre-configured users:
 
 ### Base URL
 ```
-http://localhost:8080/pharmacy-api/api
+http://localhost:8545/pharmacy-api/api
 ```
 
 ### Authentication Endpoints
@@ -411,7 +411,7 @@ The application uses H2 in-memory database for development.
 
 ### H2 Console Access
 ```
-URL: http://localhost:8080/pharmacy-api/h2-console
+URL: http://localhost:8545/pharmacy-api/h2-console
 JDBC URL: jdbc:h2:mem:pharmacydb
 Username: sa
 Password: (leave empty)
@@ -440,7 +440,7 @@ Key configurations in `application.properties`:
 
 ```properties
 # Server
-server.port=8080
+server.port=8545
 server.servlet.context-path=/pharmacy-api
 
 # Database
@@ -507,7 +507,7 @@ This project is licensed under the MIT License.
 
 For issues and questions:
 - Create an issue in the repository
-- Contact: support@pharmacy.com
+- Contact: shadyahmed9719@gmail.com
 
 ---
 
@@ -531,7 +531,7 @@ I've created **9 separate artifacts** containing all the code for your pharmacy 
 
 ### **Artifact 2: application.properties**
 ⚙️ **Artifact ID:** `pharmacy_application_properties`
-- Server configuration (port 8080)
+- Server configuration (port 8545)
 - Database configuration (H2)
 - JWT settings
 - File upload limits
@@ -771,7 +771,41 @@ After setting up, verify you have:
 **Total: 73 files (including pom.xml, properties, README)**
 
 ---
-## Delta Pharmacy API - Complete Workflow Diagram 
+### How to View diagrams
+1. **Standalone Mermaid files:** `.mmd`
+    - Can be opened in Mermaid Live Editor
+    - URL: https://mermaid.live
+
+2. **Export Options:**
+    - **PNG** - Raster image
+    - **SVG** - Vector image (scalable)
+    - **PDF** - Document format
+
+### **Tools to View/Edit:**
+
+1. **Online:**
+    - Mermaid Live Editor: https://mermaid.live
+    - GitHub/GitLab (renders automatically in `.md` files)
+
+2. **IDE Plugins:**
+    - VS Code: "Mermaid Preview" extension
+    - IntelliJ IDEA: Mermaid plugin
+    - Obsidian: Native support
+
+3. **Documentation:**
+    - Confluence (with Mermaid plugin)
+    - Notion (with Mermaid blocks)
+    - GitBook (native support)
+
+### **To Save:**
+Just copy the Mermaid code from the artifacts and save as:
+- `pharmacy-workflow.mmd`
+- `pharmacy-sequence.mmd`
+- `pharmacy-modules.mmd`
+- `pharmacy-usecases.mmd`
+
+
+## Delta Pharmacy API - Complete Workflow Diagram
 ```mermaid
    graph TD
     Start([🏁 Start]) --> UserReg[👤 User Registration]
