@@ -50,6 +50,7 @@ mvn spring-boot:run
 ```
 
 The application will start on `http://localhost:8545/pharmacy-api`
+- **API Documentation**: http://localhost:8545/pharmacy-api/swagger-ui/index.html
 
 ### Default Users
 

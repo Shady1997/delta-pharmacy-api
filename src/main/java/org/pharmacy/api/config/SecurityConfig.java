@@ -1,3 +1,9 @@
+/*
+ * Author: Shady Ahmed
+ * Date: 2025-09-27
+ * Project: Delta Pharmacy API
+ * My Linked-in: https://www.linkedin.com/in/shady-ahmed97/.
+ */
 package org.pharmacy.api.config;
 
 import org.pharmacy.api.security.JwtAuthenticationFilter;
@@ -29,6 +35,13 @@ public class SecurityConfig {
                         // Public endpoints
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+
+                        // Swagger/OpenAPI endpoints
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-resources/**", "/webjars/**").permitAll()
+
+                        // Public product endpoints
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()

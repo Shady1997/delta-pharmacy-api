@@ -1,5 +1,14 @@
+/*
+ * Author: Shady Ahmed
+ * Date: 2025-09-27
+ * Project: Delta Pharmacy API
+ * My Linked-in: https://www.linkedin.com/in/shady-ahmed97/.
+ */
 package org.pharmacy.api.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pharmacy.api.dto.ApiResponse;
 import org.pharmacy.api.model.Prescription;
 import org.pharmacy.api.service.PrescriptionService;
@@ -14,11 +23,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/prescriptions")
 @RequiredArgsConstructor
+@Tag(name = "3. Prescriptions", description = "Prescription upload and approval management")
 public class PrescriptionController {
 
     private final PrescriptionService prescriptionService;
 
     @PostMapping("/upload")
+    @Operation(summary = "Upload prescription", description = "Upload prescription document for review")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApiResponse<Prescription>> uploadPrescription(
             @RequestParam Long userId,
             @RequestParam String fileName,
@@ -32,12 +44,16 @@ public class PrescriptionController {
     }
 
     @GetMapping("/{userId}")
+    @Operation(summary = "Get user prescriptions", description = "Retrieve all prescriptions for a specific user")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApiResponse<List<Prescription>>> getUserPrescriptions(@PathVariable Long userId) {
         List<Prescription> prescriptions = prescriptionService.getUserPrescriptions(userId);
         return ResponseEntity.ok(ApiResponse.success(prescriptions));
     }
 
     @PutMapping("/{id}/approve")
+    @Operation(summary = "Approve prescription", description = "Approve a prescription (Pharmacist/Admin only)")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApiResponse<Prescription>> approvePrescription(
             @PathVariable Long id,
             Authentication authentication) {
@@ -46,6 +62,8 @@ public class PrescriptionController {
     }
 
     @PutMapping("/{id}/reject")
+    @Operation(summary = "Reject prescription", description = "Reject a prescription with reason (Pharmacist/Admin only)")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApiResponse<Prescription>> rejectPrescription(
             @PathVariable Long id,
             @RequestBody Map<String, String> body,
@@ -56,6 +74,8 @@ public class PrescriptionController {
     }
 
     @GetMapping("/pending")
+    @Operation(summary = "Get pending prescriptions", description = "Retrieve all pending prescriptions (Pharmacist/Admin only)")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApiResponse<List<Prescription>>> getPendingPrescriptions() {
         List<Prescription> prescriptions = prescriptionService.getPendingPrescriptions();
         return ResponseEntity.ok(ApiResponse.success(prescriptions));
