@@ -4,6 +4,8 @@
 
 A comprehensive Spring Boot RESTful API for managing delta pharmacy operations including user authentication, product management, prescription handling, order processing, payments, and analytics.
 
+![Delta Pharmacy Logo](logo.jpg)
+
 ## 📋 Features
 
 ### Core Features
