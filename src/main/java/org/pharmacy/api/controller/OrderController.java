@@ -17,6 +17,7 @@ import org.pharmacy.api.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class OrderController {
     }
 
     @GetMapping("/{userId}")
+    @Transactional(readOnly = true)
     @Operation(summary = "Get user orders", description = "Retrieve order history for a specific user")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApiResponse<List<Order>>> getUserOrders(@PathVariable Long userId) {
@@ -45,6 +47,7 @@ public class OrderController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     @Operation(summary = "Get all orders", description = "Retrieve all orders (Admin/Pharmacist only)")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ApiResponse<List<Order>>> getAllOrders() {

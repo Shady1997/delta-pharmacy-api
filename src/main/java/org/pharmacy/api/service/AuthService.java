@@ -6,6 +6,7 @@
  */
 package org.pharmacy.api.service;
 
+import org.pharmacy.api.model.User.UserRole;
 import org.pharmacy.api.dto.*;
 import org.pharmacy.api.model.User;
 import org.pharmacy.api.repository.UserRepository;
@@ -26,30 +27,30 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+        // Check if user exists
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
         }
 
+        // Create new user
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
-        user.setRole(User.UserRole.CUSTOMER);
 
-        user = userRepository.save(user);
+        // Set role from request, default to CUSTOMER if not provided
+        String roleStr = request.getRole() != null ? request.getRole() : "CUSTOMER";
+        user.setRole(UserRole.valueOf(roleStr));  // ← Changed from Role to UserRole
 
+        userRepository.save(user);
+
+        // Generate token
         String token = jwtTokenProvider.generateToken(user.getEmail());
 
-        return new AuthResponse(
-                token,
-                "Bearer",
-                user.getId(),
-                user.getEmail(),
-                user.getFullName(),
-                user.getRole().name()
-        );
+        return new AuthResponse(token, "Bearer", user.getId(), user.getEmail(),
+                user.getFullName(), user.getRole().name());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -68,7 +69,7 @@ public class AuthService {
                 user.getId(),
                 user.getEmail(),
                 user.getFullName(),
-                user.getRole().name()
+                user.getRole().name()  // ← This is correct now
         );
     }
 
