@@ -1,9 +1,3 @@
-/*
- * Author: Shady Ahmed
- * Date: 2025-09-27
- * Project: Delta Pharmacy API
- * My Linked-in: https://www.linkedin.com/in/shady-ahmed97/.
- */
 package org.pharmacy.api.repository;
 
 import org.pharmacy.api.model.Prescription;
@@ -15,5 +9,6 @@ import java.util.List;
 @Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
     List<Prescription> findByUser(User user);
+    List<Prescription> findByUserId(Long userId);
     List<Prescription> findByStatus(Prescription.PrescriptionStatus status);
 }

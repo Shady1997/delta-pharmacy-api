@@ -1,9 +1,3 @@
-/*
- * Author: Shady Ahmed
- * Date: 2025-09-27
- * Project: Delta Pharmacy API
- * My Linked-in: https://www.linkedin.com/in/shady-ahmed97/.
- */
 package org.pharmacy.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,10 +5,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.pharmacy.api.dto.ApiResponse;
 import org.pharmacy.api.model.Prescription;
+import org.pharmacy.api.repository.PrescriptionRepository;  // ← ADD THIS IMPORT
 import org.pharmacy.api.service.PrescriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +23,7 @@ import java.util.Map;
 public class PrescriptionController {
 
     private final PrescriptionService prescriptionService;
+    private final PrescriptionRepository prescriptionRepository;  // ← ADD THIS
 
     @PostMapping("/upload")
     @Operation(summary = "Upload prescription", description = "Upload prescription document for review")
@@ -46,7 +43,7 @@ public class PrescriptionController {
     @GetMapping("/{userId}")
     @Operation(summary = "Get user prescriptions", description = "Retrieve all prescriptions for a specific user")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ApiResponse<List<Prescription>>> getUserPrescriptions(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<List<Prescription>>> getUserPrescriptionsByPathVariable(@PathVariable Long userId) {
         List<Prescription> prescriptions = prescriptionService.getUserPrescriptions(userId);
         return ResponseEntity.ok(ApiResponse.success(prescriptions));
     }
@@ -80,5 +77,22 @@ public class PrescriptionController {
         List<Prescription> prescriptions = prescriptionService.getPendingPrescriptions();
         return ResponseEntity.ok(ApiResponse.success(prescriptions));
     }
-}
 
+    @GetMapping
+    @Transactional(readOnly = true)
+    @Operation(summary = "Get all prescriptions", description = "Retrieve all prescriptions (Admin/Pharmacist only)")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ApiResponse<List<Prescription>>> getAllPrescriptions() {
+        List<Prescription> prescriptions = prescriptionRepository.findAll();
+        return ResponseEntity.ok(ApiResponse.success(prescriptions));
+    }
+
+    @GetMapping("/user/{userId}")
+    @Transactional(readOnly = true)
+    @Operation(summary = "Get user prescriptions", description = "Retrieve prescriptions for a specific user")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ApiResponse<List<Prescription>>> getUserPrescriptionsByUser(@PathVariable Long userId) {
+        List<Prescription> prescriptions = prescriptionRepository.findByUserId(userId);
+        return ResponseEntity.ok(ApiResponse.success(prescriptions));
+    }
+}

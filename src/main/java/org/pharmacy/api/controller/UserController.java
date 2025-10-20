@@ -43,4 +43,14 @@ public class UserController {
 
         return ResponseEntity.ok(ApiResponse.success("Role updated successfully", user));
     }
+    @DeleteMapping("/{userId}")
+    @Transactional
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userRepository.delete(user);
+
+        return ResponseEntity.ok(ApiResponse.success("User deleted successfully", null));
+    }
 }
