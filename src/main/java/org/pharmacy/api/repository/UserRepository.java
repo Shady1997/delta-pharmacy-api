@@ -1,9 +1,3 @@
-/*
- * Author: Shady Ahmed
- * Date: 2025-09-27
- * Project: Delta Pharmacy API
- * My Linked-in: https://www.linkedin.com/in/shady-ahmed97/.
- */
 package org.pharmacy.api.repository;
 
 import org.pharmacy.api.model.User;
@@ -14,5 +8,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
-    boolean existsByEmail(String email);
+
+    long countByRole(User.UserRole role);
 }

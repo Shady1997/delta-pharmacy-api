@@ -46,17 +46,20 @@ public class SupportService {
         return supportTicketRepository.save(ticket);
     }
 
+    @Transactional(readOnly = true)
     public SupportTicket getTicketById(Long id) {
         return supportTicketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
     }
 
+    @Transactional(readOnly = true)
     public List<SupportTicket> getUserTickets(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return supportTicketRepository.findByUser(user);
+        return supportTicketRepository.findByUserId(user.getId());  // ← CHANGED from findByUser(user)
     }
 
+    @Transactional(readOnly = true)
     public List<SupportTicket> getAllTickets() {
         return supportTicketRepository.findAll();
     }

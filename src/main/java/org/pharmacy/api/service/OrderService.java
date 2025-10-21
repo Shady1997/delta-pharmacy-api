@@ -89,16 +89,19 @@ public class OrderService {
         return order;
     }
 
+    @Transactional(readOnly = true)
     public List<Order> getUserOrders(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return orderRepository.findByUser(user);
+        return orderRepository.findByUserId(userId);  // ← CHANGED from findByUser(user)
     }
 
+    @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Order getOrderById(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
