@@ -1,20 +1,12 @@
-/*
- * Author: Shady Ahmed
- * Date: 2025-09-27
- * Project: Delta Pharmacy API
- * My Linked-in: https://www.linkedin.com/in/shady-ahmed97/.
- */
 package org.pharmacy.api.repository;
 
 import org.pharmacy.api.model.Payment;
-import org.pharmacy.api.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    Optional<Payment> findByOrder(Order order);
-    List<Payment> findByOrderUser_Id(Long userId);
+    List<Payment> findByUserId(Long userId);
+    List<Payment> findByOrderId(Long orderId);
 }

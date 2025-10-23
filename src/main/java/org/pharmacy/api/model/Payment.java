@@ -2,7 +2,6 @@
  * Author: Shady Ahmed
  * Date: 2025-09-27
  * Project: Delta Pharmacy API
- * My Linked-in: https://www.linkedin.com/in/shady-ahmed97/.
  */
 package org.pharmacy.api.model;
 
@@ -10,7 +9,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,22 +21,26 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "order_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "order_id")
     private Order order;
 
-    private String transactionId;
-
-    @Enumerated(EnumType.STRING)
-    private PaymentStatus status = PaymentStatus.PENDING;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private Double amount;
     private String paymentMethod;
 
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status = PaymentStatus.PENDING;
+
+    private String transactionId;
+    private String cardLastFourDigits;
     private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime completedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     public enum PaymentStatus {
-        PENDING, COMPLETED, FAILED, REFUNDED
+        PENDING, PROCESSING, COMPLETED, FAILED, REFUNDED
     }
 }
