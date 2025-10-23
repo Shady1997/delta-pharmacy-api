@@ -1,9 +1,3 @@
-/*
- * Author: Shady Ahmed
- * Date: 2025-09-27
- * Project: Delta Pharmacy API
- * My Linked-in: https://www.linkedin.com/in/shady-ahmed97/.
- */
 package org.pharmacy.api.repository;
 
 import org.pharmacy.api.model.Notification;
@@ -15,5 +9,5 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findByUser(User user);
-    List<Notification> findByUserAndIsRead(User user, Boolean isRead);
+    List<Notification> findByUserAndRead(User user, Boolean read);  // ← Changed from IsRead to Read
 }

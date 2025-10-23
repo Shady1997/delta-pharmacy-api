@@ -12,36 +12,29 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "chat_messages")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Notification {
+public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "sender_id")
+    private User sender;
 
-    private String title;
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private User receiver;
+
+    @Column(nullable = false, length = 1000)
     private String message;
 
-    @Enumerated(EnumType.STRING)
-    private NotificationType type;
-
     @Column(name = "is_read")
-    private Boolean read = false;
+    private Boolean isRead = false;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    public enum NotificationType {
-        ORDER_UPDATE,
-        PAYMENT_UPDATE,
-        PRESCRIPTION_UPDATE,
-        SYSTEM,
-        CHAT_MESSAGE  // ← Add this line
-    }
 }

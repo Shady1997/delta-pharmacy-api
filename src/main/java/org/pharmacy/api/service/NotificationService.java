@@ -29,7 +29,7 @@ public class NotificationService {
         notification.setTitle(title);
         notification.setMessage(message);
         notification.setType(Notification.NotificationType.valueOf(type));
-        notification.setIsRead(false);
+        notification.setRead(false);  // ← Changed from setIsRead to setRead
 
         notification = notificationRepository.save(notification);
 
@@ -55,14 +55,14 @@ public class NotificationService {
     public List<Notification> getUnreadNotifications(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return notificationRepository.findByUserAndIsRead(user, false);
+        return notificationRepository.findByUserAndRead(user, false);  // ← Changed from IsRead to Read
     }
 
     @Transactional
     public Notification markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
-        notification.setIsRead(true);
+        notification.setRead(true);  // ← Changed from setIsRead to setRead
         return notificationRepository.save(notification);
     }
 }
