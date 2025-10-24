@@ -2,7 +2,6 @@
  * Author: Shady Ahmed
  * Date: 2025-09-27
  * Project: Delta Pharmacy API
- * My Linked-in: https://www.linkedin.com/in/shady-ahmed97/.
  */
 package org.pharmacy.api.service;
 
@@ -93,7 +92,7 @@ public class OrderService {
     public List<Order> getUserOrders(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return orderRepository.findByUserId(userId);  // ← CHANGED from findByUser(user)
+        return orderRepository.findByUserId(userId);
     }
 
     @Transactional(readOnly = true)
@@ -110,9 +109,21 @@ public class OrderService {
     @Transactional
     public Order updateOrderStatus(Long id, String status) {
         Order order = getOrderById(id);
+        Order.OrderStatus oldStatus = order.getStatus();
 
         try {
             Order.OrderStatus newStatus = Order.OrderStatus.valueOf(status.toUpperCase());
+
+            // If changing FROM delivered TO another status, return stock
+            if (oldStatus == Order.OrderStatus.DELIVERED && newStatus != Order.OrderStatus.DELIVERED) {
+                returnStockToInventory(order);
+            }
+
+            // If changing TO cancelled, return stock
+            if (newStatus == Order.OrderStatus.CANCELLED && oldStatus != Order.OrderStatus.CANCELLED) {
+                returnStockToInventory(order);
+            }
+
             order.setStatus(newStatus);
             order.setUpdatedAt(LocalDateTime.now());
 
@@ -139,11 +150,8 @@ public class OrderService {
             throw new RuntimeException("Cannot cancel delivered order");
         }
 
-        for (OrderItem item : order.getItems()) {
-            Product product = item.getProduct();
-            product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
-            productRepository.save(product);
-        }
+        // Return stock to inventory
+        returnStockToInventory(order);
 
         order.setStatus(Order.OrderStatus.CANCELLED);
         order.setUpdatedAt(LocalDateTime.now());
@@ -155,5 +163,16 @@ public class OrderService {
                 "Your order #" + order.getId() + " has been cancelled.",
                 "ORDER_UPDATE"
         );
+    }
+
+    /**
+     * Return stock to inventory when order is cancelled or status changed from delivered
+     */
+    private void returnStockToInventory(Order order) {
+        for (OrderItem item : order.getItems()) {
+            Product product = item.getProduct();
+            product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+            productRepository.save(product);
+        }
     }
 }

@@ -58,8 +58,12 @@ public class ChatController {
     @GetMapping("/pharmacist")
     @Operation(summary = "Get pharmacist for chat", description = "Get available pharmacist/admin for chat")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ApiResponse<User>> getPharmacist() {
-        User pharmacist = chatService.findPharmacistOrAdmin();
+    public ResponseEntity<ApiResponse<User>> getPharmacist(Authentication authentication) {
+        // Get current user from email
+        User currentUser = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        User pharmacist = chatService.findPharmacistOrAdmin(currentUser.getId());
         return ResponseEntity.ok(ApiResponse.success(pharmacist));
     }
 
